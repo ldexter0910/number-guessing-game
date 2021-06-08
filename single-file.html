@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Number Guessing Game</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      button {
+        background-color: #0052cc;
+        color: white;
+        margin: 0 auto;
+        padding: 1em 2em;
+        font-size: 1em;
+        font-family: inherit;
+        border: 1px solid #0052cc;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      input {
+        margin: 0 1em;
+        padding: 1em 2em;
+        font-size: 1em;
+        font-family: inherit;
+        border: 1px solid #0052cc;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body
+    style="
+      font-family: 'Noto Sans JP', sans-serif;
+      margin: 0 0;
+      text-align: center;
+    "
+  >
+    <div
+      style="
+        min-width: 50vw;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+      "
+    >
+      <h1 style="color: #0052cc">Number Guessing Game</h1>
+      <p style="margin: 1em">
+        We have selected a random number between 1 and 100. See if you can guess
+        it in 10 turns or fewer. We'll tell you if your guess was too high or
+        too low
+      </p>
+      <div id="game-div" style="margin: 1em; display: none">
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <label style="margin: 1em" for="number-input"
+            >Enter your choices</label
+          >
+          <input
+            style="margin: 1em"
+            id="number-input"
+            type="number"
+            placeholder="Enter numbers only"
+          />
+          <button style="margin: 1em" id="submit-btn" type="button">
+            Submit your choice
+          </button>
+        </div>
+        <p id="choices-p">
+          Your Choices:
+          <span id="choices-output"></span>
+        </p>
+      </div>
+      <div style="margin: 1em">
+        <p
+          id="success-text"
+          style="
+            padding: 1em 2em;
+            font-size: 1em;
+            font-family: inherit;
+            background-color: #34a853;
+            color: white;
+            display: none;
+          "
+        >
+          Success!!
+        </p>
+        <p
+          id="failure-text"
+          style="
+            padding: 1em 2em;
+            font-size: 1em;
+            font-family: inherit;
+            background-color: #ea4335;
+            color: white;
+            display: none;
+          "
+        ></p>
+      </div>
+      <div>
+        <button id="start-btn" type="button">Start Game</button>
+      </div>
+    </div>
+    <script>
+      let timesPlayed = 0;
+      let randomNo = -1;
+      let choicesEntered = 0;
+      let choices = [];
+
+      const gameDiv = document.querySelector("#game-div");
+      const startBtn = document.querySelector("#start-btn");
+      const submitChoiceBtn = document.querySelector("#submit-btn");
+      const inputField = document.querySelector("#number-input");
+      const outputSpan = document.querySelector("#choices-output");
+
+      const successText = document.querySelector("#success-text");
+      const failureText = document.querySelector("#failure-text");
+
+      function random(x) {
+        return Math.floor(Math.random() * (x + 1));
+      }
+
+      let onChoiceSubmit = () => {
+        let value = inputField.value;
+        choices.push(value);
+        choicesEntered++;
+
+        if (value == randomNo) {
+          gameDiv.style.display = "none";
+          startBtn.style.display = "inline-block";
+          startBtn.textContent = "Start Again!";
+
+          failureText.style.display = "none";
+          successText.style.display = "block";
+        } else {
+          successText.style.display = "none";
+          failureText.style.display = "block";
+
+          outputSpan.textContent = choices.join(" ");
+          if (choicesEntered === 10) {
+            failureText.textContent = "All attempts used!!!";
+
+            gameDiv.style.display = "none";
+            startBtn.style.display = "inline-block";
+            startBtn.textContent = "Retry!";
+          } else {
+            failureText.textContent =
+              +value < randomNo
+                ? "The answer is larger than this"
+                : "The answer is smaller than this";
+          }
+        }
+        inputField.value = "";
+        inputField.focus();
+      };
+
+      startBtn.addEventListener("click", (e) => {
+        choicesEntered = 0;
+        choices = [];
+        timesPlayed++;
+        randomNo = random(100);
+
+        gameDiv.style.display = "block";
+        inputField.value = "";
+        inputField.focus();
+        outputSpan.textContent = "";
+        startBtn.style.display = "none";
+        successText.style.display = "none";
+        failureText.style.display = "none";
+      });
+
+      submitChoiceBtn.addEventListener("click", onChoiceSubmit);
+      inputField.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") onChoiceSubmit();
+      });
+    </script>
+  </body>
+</html>
